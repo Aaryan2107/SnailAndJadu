@@ -10,8 +10,8 @@ class Player(pygame.sprite.Sprite):
         self.player_jump = pygame.image.load('graphics/Player/jump.png').convert_alpha()
         self.player_index = 0
         self.player_walk_list = [player_frame_1,player_frame_2]
-        self.player_surf = self.player_walk_list[0]
-        self.rect = self.player_surf.get_rect(midbottom = (200,300))
+        self.image = self.player_walk_list[0]
+        self.rect = self.image.get_rect(midbottom = (200,300))
 
     def player_input(self):
         key = pygame.key.get_pressed()
@@ -24,16 +24,17 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = 300
     def animation_state(self):
         if self.rect.bottom < 300:
-            self.player_surf = self.player_jump
+            self.image = self.player_jump
         else:
             self.player_index += 0.1
-            self.player_surf = self.player_walk_list[int(self.player_index)]
             if self.player_index >= len(self.player_walk_list):
                 self.player_index = 0
+            self.image = self.player_walk_list[int(self.player_index)]
     def update(self):
         self.player_input()
         self.apply_gravity()
         self.animation_state()
+        
 
 
 pygame.init()
@@ -46,7 +47,7 @@ font1 = pygame.font.Font('font/Pixeltype.ttf',50)
 font2 = pygame.font.Font('font/Pixeltype.ttf',30)
 start_time = 0
 player = pygame.sprite.GroupSingle()
-# player.add(Player())
+player.add(Player())
 # test_surface = pygame.Surface((200,200)) # to create a plain surface
 # test_surface.fill("blue") 
 sky_surface = pygame.image.load('graphics/Sky.png').convert()
@@ -127,7 +128,7 @@ def collisions(player,obstacle_list):
     return True
 def player_animation():
     global player_surf,player_index
-    if player_rect.bottom > 300:
+    if player_rect.bottom < 300:
         player_surf = player_jump
     else:
         player_index += 0.1
